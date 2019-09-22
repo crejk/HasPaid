@@ -1,13 +1,13 @@
-package pl.crejk.haspaid;
+package pl.crejk.haspaid.mojang;
 
 import java.util.Objects;
 
-public class HasPaidResult {
+public class MojangProfile {
 
     private final String id;
     private final String name;
 
-    public HasPaidResult(String id, String name) {
+    public MojangProfile(String id, String name) {
         this.id = id;
         this.name = name;
     }
@@ -24,7 +24,7 @@ public class HasPaidResult {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        HasPaidResult that = (HasPaidResult) o;
+        MojangProfile that = (MojangProfile) o;
         return Objects.equals(id, that.id) &&
                 Objects.equals(name, that.name);
     }
@@ -36,7 +36,7 @@ public class HasPaidResult {
 
     @Override
     public String toString() {
-        return "HasPaidResult{" +
+        return "MojangProfile{" +
                 "id='" + id + '\'' +
                 ", name='" + name + '\'' +
                 '}';

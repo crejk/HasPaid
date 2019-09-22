@@ -14,7 +14,6 @@ Every second, up to 100 usernames will be verified using the mojang api in a sin
 Can't send more than that.
 
 ## TODO
-- repository (mysql)
 - key (must have key to get response from api)
 
 ## Endpoints

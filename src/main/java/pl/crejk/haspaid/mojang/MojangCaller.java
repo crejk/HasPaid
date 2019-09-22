@@ -1,4 +1,4 @@
-package pl.crejk.haspaid;
+package pl.crejk.haspaid.mojang;
 
 import retrofit2.Call;
 import retrofit2.http.Body;
@@ -7,8 +7,8 @@ import retrofit2.http.POST;
 import java.util.List;
 import java.util.Set;
 
-public interface HasPaidCaller {
+public interface MojangCaller {
 
     @POST("/profiles/minecraft")
-    Call<Set<HasPaidResult>> profile(@Body List<String> names);
+    Call<Set<MojangProfile>> profile(@Body List<String> names);
 }

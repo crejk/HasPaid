@@ -4,6 +4,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.EnableScheduling;
+import pl.crejk.haspaid.profile.ProfileManager;
+import pl.crejk.haspaid.request.RequestManager;
 
 @Configuration
 @EnableAsync
@@ -11,7 +13,12 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 public class HasPaidConfiguration {
 
     @Bean
-    public HasPaidManager manager() {
-        return new HasPaidManager();
+    public RequestManager manager() {
+        return new RequestManager();
+    }
+
+    @Bean
+    public ProfileManager profileManager() {
+        return new ProfileManager();
     }
 }

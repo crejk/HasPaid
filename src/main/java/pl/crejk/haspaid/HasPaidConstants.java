@@ -3,12 +3,12 @@ package pl.crejk.haspaid;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
-final class HasPaidConstants {
+public final class HasPaidConstants {
 
     private HasPaidConstants() {
     }
 
-    static final String MOJANG_API_URL = "https://api.mojang.com";
+    public static final String MOJANG_API_URL = "https://api.mojang.com";
 
-    static final Gson GSON = new GsonBuilder().disableHtmlEscaping().create();
+    public static final Gson GSON = new GsonBuilder().disableHtmlEscaping().create();
 }

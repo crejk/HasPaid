@@ -5,6 +5,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import pl.crejk.haspaid.profile.Profile;
+import pl.crejk.haspaid.profile.ProfileManager;
+import pl.crejk.haspaid.profile.ProfileRepository;
+import pl.crejk.haspaid.request.RequestManager;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
@@ -14,29 +18,34 @@ import java.util.Objects;
 @RestController
 public class HasPaidController {
 
-    private final HasPaidManager manager;
+    private final RequestManager requestManager;
+    private final ProfileManager profileManager;
+    private final ProfileRepository profileRepository;
 
     @Autowired
-    public HasPaidController(HasPaidManager manager) {
-        this.manager = manager;
+    public HasPaidController(RequestManager requestManager, ProfileManager profileManager, ProfileRepository profileRepository) {
+        this.requestManager = requestManager;
+        this.profileManager = profileManager;
+        this.profileRepository = profileRepository;
     }
 
     @GetMapping("/haspaid")
     public ResponseEntity<Mono<Boolean>> hasPaid(@RequestParam String name) {
-        final Boolean cache = this.manager.getResult(name);
+        final Mono<Boolean> hasPaid = Mono.fromCallable(() -> this.profileManager.getProfile(name))
+                .switchIfEmpty(this.profileRepository.findById(name).map(Mono::just).orElseGet(Mono::empty))
+                .switchIfEmpty(this.waitForProfile(name))
+                .map(Profile::isPremium);
 
-        if (cache != null) {
-            return ResponseEntity.ok(Mono.just(cache));
-        }
+        return ResponseEntity.ok(hasPaid);
+    }
 
-        this.manager.addRequest(name);
+    private Mono<Profile> waitForProfile(String name) {
+        this.requestManager.addRequest(name);
 
-        final Mono<Boolean> result = Flux.interval(Duration.ofSeconds(1))
-                .map(it -> this.manager.getResult(name))
+        return Flux.interval(Duration.ofSeconds(1))
+                .map(it -> this.profileManager.getProfile(name))
                 .retry(Objects::nonNull)
                 .take(1)
                 .single();
-
-        return ResponseEntity.ok(result);
     }
 }

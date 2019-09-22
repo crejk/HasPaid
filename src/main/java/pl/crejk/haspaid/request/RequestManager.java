@@ -1,29 +1,27 @@
-package pl.crejk.haspaid;
+package pl.crejk.haspaid.request;
 
-import com.google.common.cache.Cache;
-import com.google.common.cache.CacheBuilder;
+import pl.crejk.haspaid.HasPaidConstants;
+import pl.crejk.haspaid.mojang.MojangCaller;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
-import java.util.*;
-import java.util.concurrent.TimeUnit;
+import java.util.ArrayList;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Set;
 
-public class HasPaidManager {
+public class RequestManager {
 
     private final Set<String> requests;
-    private final Cache<String, Boolean> results;
-    private final HasPaidCaller caller;
+    private final MojangCaller caller;
 
-    public HasPaidManager() {
+    public RequestManager() {
         this.requests = new LinkedHashSet<>();
-        this.results = CacheBuilder.newBuilder()
-                .expireAfterWrite(30, TimeUnit.MINUTES)
-                .build();
         this.caller = new Retrofit.Builder()
                 .addConverterFactory(GsonConverterFactory.create(HasPaidConstants.GSON))
                 .baseUrl(HasPaidConstants.MOJANG_API_URL)
                 .build()
-                .create(HasPaidCaller.class);
+                .create(MojangCaller.class);
     }
 
     public void addRequest(String name) {
@@ -39,15 +37,7 @@ public class HasPaidManager {
         return currentRequests;
     }
 
-    public HasPaidCaller getCaller() {
+    public MojangCaller getCaller() {
         return this.caller;
-    }
-
-    public Boolean getResult(String name) {
-        return this.results.getIfPresent(name);
-    }
-
-    public void addResult(String name, boolean premium) {
-        this.results.put(name, premium);
     }
 }

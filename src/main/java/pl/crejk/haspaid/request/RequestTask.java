@@ -3,6 +3,7 @@ package pl.crejk.haspaid.request;
 import pl.crejk.haspaid.mojang.MojangProfile;
 import pl.crejk.haspaid.profile.Profile;
 import pl.crejk.haspaid.profile.ProfileManager;
+import pl.crejk.haspaid.profile.ProfileRepository;
 
 import java.io.IOException;
 import java.util.List;
@@ -14,10 +15,12 @@ public class RequestTask implements Runnable {
 
     private final RequestManager requestManager;
     private final ProfileManager profileManager;
+    private final ProfileRepository profileRepository;
 
-    RequestTask(RequestManager requestManager, ProfileManager profileManager) {
+    RequestTask(RequestManager requestManager, ProfileManager profileManager, ProfileRepository profileRepository) {
         this.requestManager = requestManager;
         this.profileManager = profileManager;
+        this.profileRepository = profileRepository;
     }
 
     @Override
@@ -45,13 +48,18 @@ public class RequestTask implements Runnable {
                 final MojangProfile mojangProfile = profiles.get(name);
 
                 if (mojangProfile != null) {
-                    this.profileManager.addProfile(new Profile(mojangProfile));
+                    this.saveProfile(new Profile(mojangProfile));
                 } else {
-                    this.profileManager.addProfile(new Profile(name));
+                    this.saveProfile(new Profile(name));
                 }
             }
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    private void saveProfile(Profile profile) {
+        this.profileRepository.save(profile);
+        this.profileManager.addProfile(profile);
     }
 }

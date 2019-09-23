@@ -1,10 +1,9 @@
 package pl.crejk.haspaid.profile;
 
+import io.vavr.control.Option;
 import org.springframework.data.repository.CrudRepository;
-
-import java.util.Optional;
 
 public interface ProfileRepository extends CrudRepository<Profile, Integer> {
 
-    Optional<Profile> findByName(String name);
+    Option<Profile> findByName(String name);
 }

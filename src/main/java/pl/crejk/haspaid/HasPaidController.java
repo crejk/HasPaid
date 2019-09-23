@@ -1,6 +1,5 @@
 package pl.crejk.haspaid;
 
-import io.vavr.control.Option;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -32,7 +31,7 @@ public class HasPaidController {
     @GetMapping("/haspaid")
     public ResponseEntity<Mono<Boolean>> hasPaid(@RequestParam String name) {
         final Mono<Boolean> result = this.profileManager.getProfile(name)
-                .orElse(() -> Option.ofOptional(this.profileRepository.findByName(name)))
+                .orElse(() -> this.profileRepository.findByName(name))
                 .map(Mono::just)
                 .getOrElse(() -> this.waitForProfile(name))
                 .map(Profile::isPremium);

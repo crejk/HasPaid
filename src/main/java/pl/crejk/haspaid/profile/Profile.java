@@ -3,10 +3,7 @@ package pl.crejk.haspaid.profile;
 import pl.crejk.haspaid.mojang.MojangProfile;
 import pl.crejk.haspaid.util.UUIDUtil;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.util.Objects;
 import java.util.UUID;
 
@@ -14,28 +11,35 @@ import java.util.UUID;
 @Entity
 public class Profile {
 
-    private UUID id;
     @Id
-    @Column(columnDefinition = "VARCHAR(16)")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private int id;
+
+    @Column(unique = true, columnDefinition = "BINARY(16)")
+    private UUID uniqueId;
+
+    @Column(unique = true, columnDefinition = "VARCHAR(16)")
     private String name;
+
+    @Column(nullable = false)
     private boolean premium;
 
-    public Profile(UUID id, String name, boolean premium) {
-        this.id = id;
+    public Profile(UUID uniqueId, String name, boolean premium) {
+        this.uniqueId = uniqueId;
         this.name = name;
         this.premium = premium;
     }
 
     // premium account constructor
     public Profile(MojangProfile profile) {
-        this.id = UUIDUtil.fromIdWithoutBreak(profile.getId());
+        this.uniqueId = UUIDUtil.fromIdWithoutBreak(profile.getId());
         this.name = profile.getName();
         this.premium = true;
     }
 
     // cracked account constructor
     public Profile(String name) {
-        this.id = UUIDUtil.getOfflineId(name);
+        this.uniqueId = UUIDUtil.getOfflineId(name);
         this.name = name;
         this.premium = false;
     }
@@ -43,16 +47,36 @@ public class Profile {
     public Profile() {
     }
 
-    public UUID getId() {
+    public int getId() {
         return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public UUID getUniqueId() {
+        return uniqueId;
+    }
+
+    public void setUniqueId(UUID uniqueId) {
+        this.uniqueId = uniqueId;
     }
 
     public String getName() {
         return name;
     }
 
+    public void setName(String name) {
+        this.name = name;
+    }
+
     public boolean isPremium() {
         return premium;
+    }
+
+    public void setPremium(boolean premium) {
+        this.premium = premium;
     }
 
     @Override
@@ -60,20 +84,22 @@ public class Profile {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Profile profile = (Profile) o;
-        return premium == profile.premium &&
-                Objects.equals(id, profile.id) &&
-                Objects.equals(name, profile.name);
+        return id == profile.id &&
+                premium == profile.premium &&
+                uniqueId.equals(profile.uniqueId) &&
+                name.equals(profile.name);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, name, premium);
+        return Objects.hash(id, uniqueId, name, premium);
     }
 
     @Override
     public String toString() {
         return "Profile{" +
-                "uuid=" + id +
+                "id=" + id +
+                ", uniqueId=" + uniqueId +
                 ", name='" + name + '\'' +
                 ", premium=" + premium +
                 '}';

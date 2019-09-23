@@ -32,7 +32,7 @@ public class HasPaidController {
     @GetMapping("/haspaid")
     public ResponseEntity<Mono<Boolean>> hasPaid(@RequestParam String name) {
         final Mono<Boolean> hasPaid = Mono.fromCallable(() -> this.profileManager.getProfile(name))
-                .switchIfEmpty(this.profileRepository.findById(name)
+                .switchIfEmpty(this.profileRepository.findByName(name)
                         .map(Mono::just).orElseGet(Mono::empty)
                         .doOnNext(this.profileManager::addProfile))
                 .switchIfEmpty(this.waitForProfile(name))

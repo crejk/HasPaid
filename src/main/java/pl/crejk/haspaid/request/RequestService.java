@@ -27,7 +27,8 @@ public class RequestService {
 
     @PostConstruct
     public void run() {
-        this.taskScheduler.scheduleAtFixedRate(new RequestTask(this.requestManager, this.profileManager, this.profileRepository),
-                Duration.ofSeconds(1));
+        this.taskScheduler.scheduleAtFixedRate(
+                new RequestTask(this.requestManager, this.profileManager, this.profileRepository), Duration.ofSeconds(1)
+        );
     }
 }

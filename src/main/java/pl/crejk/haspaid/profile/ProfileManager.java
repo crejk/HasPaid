@@ -2,9 +2,11 @@ package pl.crejk.haspaid.profile;
 
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
+import org.springframework.stereotype.Component;
 
 import java.util.concurrent.TimeUnit;
 
+@Component
 public class ProfileManager {
 
     private final Cache<String, Profile> profiles;

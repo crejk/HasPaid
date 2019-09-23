@@ -6,7 +6,6 @@ import pl.crejk.haspaid.profile.ProfileManager;
 import pl.crejk.haspaid.profile.ProfileRepository;
 
 import java.io.IOException;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -25,7 +24,7 @@ public class RequestTask implements Runnable {
 
     @Override
     public void run() {
-        final List<String> requests = this.requestManager.getCurrentRequests();
+        final Set<String> requests = this.requestManager.getCurrentRequests();
 
         if (requests.isEmpty()) {
             return;

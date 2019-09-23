@@ -46,7 +46,7 @@ public class HasPaidController {
 
         return Flux.interval(Duration.ofSeconds(1))
                 .map(it -> this.profileManager.getProfile(name))
-                .retry(Objects::nonNull)
+                .retry(10, Objects::nonNull)
                 .take(1)
                 .single();
     }

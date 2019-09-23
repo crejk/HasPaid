@@ -1,5 +1,6 @@
 package pl.crejk.haspaid.request;
 
+import io.vavr.collection.HashSet;
 import org.springframework.stereotype.Component;
 import pl.crejk.haspaid.HasPaidConstants;
 import pl.crejk.haspaid.mojang.MojangCaller;
@@ -8,7 +9,6 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 import java.util.LinkedHashSet;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 @Component
 public class RequestManager {
@@ -29,14 +29,11 @@ public class RequestManager {
         this.requests.add(name);
     }
 
-    public Set<String> getCurrentRequests() {
-        final Set<String> currentRequests = this.requests.stream()
+    public io.vavr.collection.Set<String> getCurrentRequests() {
+        return this.requests.stream()
                 .limit(100)
-                .collect(Collectors.toSet());
-
-        this.requests.removeAll(currentRequests);
-
-        return currentRequests;
+                .collect(HashSet.collector())
+                .peek(this.requests::remove);
     }
 
     public MojangCaller getCaller() {

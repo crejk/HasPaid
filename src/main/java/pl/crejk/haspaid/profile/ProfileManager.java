@@ -2,6 +2,7 @@ package pl.crejk.haspaid.profile;
 
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
+import io.vavr.control.Option;
 import org.springframework.stereotype.Component;
 
 import java.util.concurrent.TimeUnit;
@@ -17,8 +18,9 @@ public class ProfileManager {
                 .build();
     }
 
-    public Profile getProfile(String name) {
-        return this.profiles.getIfPresent(name);
+    public Option<Profile> getProfile(String name) {
+        final Profile profile = this.profiles.getIfPresent(name);
+        return Option.of(profile);
     }
 
     public void addProfile(Profile profile) {

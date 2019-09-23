@@ -1,5 +1,6 @@
 package pl.crejk.haspaid;
 
+import io.vavr.control.Option;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -13,7 +14,6 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.time.Duration;
-import java.util.Objects;
 
 @RestController
 public class HasPaidController {
@@ -31,22 +31,21 @@ public class HasPaidController {
 
     @GetMapping("/haspaid")
     public ResponseEntity<Mono<Boolean>> hasPaid(@RequestParam String name) {
-        final Mono<Boolean> hasPaid = Mono.fromCallable(() -> this.profileManager.getProfile(name))
-                .switchIfEmpty(this.profileRepository.findByName(name)
-                        .map(Mono::just).orElseGet(Mono::empty)
-                        .doOnNext(this.profileManager::addProfile))
-                .switchIfEmpty(this.waitForProfile(name))
+        final Mono<Boolean> result = this.profileManager.getProfile(name)
+                .orElse(() -> Option.ofOptional(this.profileRepository.findByName(name)))
+                .map(Mono::just)
+                .getOrElse(() -> this.waitForProfile(name))
                 .map(Profile::isPremium);
 
-        return ResponseEntity.ok(hasPaid);
+        return ResponseEntity.ok(result);
     }
 
     private Mono<Profile> waitForProfile(String name) {
         this.requestManager.addRequest(name);
 
         return Flux.interval(Duration.ofSeconds(1))
-                .map(it -> this.profileManager.getProfile(name))
-                .retry(10, Objects::nonNull)
+                .map(it -> this.profileManager.getProfile(name).get())
+                .retry(10)
                 .take(1)
                 .single();
     }

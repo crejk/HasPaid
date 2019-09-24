@@ -9,7 +9,6 @@ import pl.crejk.haspaid.profile.Profile;
 import pl.crejk.haspaid.profile.ProfileManager;
 import pl.crejk.haspaid.profile.ProfileRepository;
 import pl.crejk.haspaid.request.RequestManager;
-import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.time.Duration;
@@ -42,10 +41,9 @@ public class HasPaidController {
     private Mono<Profile> waitForProfile(String name) {
         this.requestManager.addRequest(name);
 
-        return Flux.interval(Duration.ofSeconds(1))
-                .map(it -> this.profileManager.getProfile(name).get())
-                .retry(10)
-                .take(1)
-                .single();
+        return Mono.delay(Duration.ofSeconds(1))
+                .flatMap(it -> this.profileManager.getProfile(name)
+                        .map(Mono::just).getOrElse(Mono::empty))
+                .take(Duration.ofSeconds(10));
     }
 }

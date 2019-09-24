@@ -40,11 +40,11 @@ public class RequestTask implements Runnable {
                 return;
             }
 
-                final Map<String, MojangProfile> profiles = response.stream()
-                        .collect(Collectors.toMap(MojangProfile::getName, profile -> profile));
+            final Map<String, MojangProfile> profiles = response.stream()
+                    .collect(Collectors.toMap(MojangProfile::getName, profile -> profile));
 
-                for (String name : requests) {
-                    final MojangProfile mojangProfile = profiles.get(name);
+            for (String name : requests) {
+                final MojangProfile mojangProfile = profiles.get(name);
 
                 if (mojangProfile != null) {
                     this.saveProfile(new Profile(mojangProfile));
